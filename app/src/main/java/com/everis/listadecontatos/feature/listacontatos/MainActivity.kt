@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.everis.listadecontatos.R
+import com.everis.listadecontatos.application.ContatosApplication
 import com.everis.listadecontatos.bases.BaseActivity
 import com.everis.listadecontatos.feature.contato.ContatoActivity
 import com.everis.listadecontatos.feature.listacontatos.adapter.ContatoAdapter
@@ -61,15 +62,8 @@ class MainActivity : BaseActivity() {
 
     private fun onClickBuscar(){
         val busca = etBuscar.text.toString()
-        var listaFiltrada: List<ContatosVO> = ContatoSingleton.lista
-        if(!busca.isNullOrEmpty()){
-            listaFiltrada = ContatoSingleton.lista.filter { contato ->
-                if (contato.nome.toLowerCase().contains(busca.toLowerCase())){
-                    return@filter true
-                }
-                return@filter false
-            }
-        }
+        var listaFiltrada: List<ContatosVO> = ContatosApplication()
+                .instance?.helperDB?.buscarContatos("") ?: mutableListOf()
         adapter = ContatoAdapter(this,listaFiltrada) {onClickItemRecyclerView(it)}
         recyclerView.adapter = adapter
         Toast.makeText(this,"Buscando por $busca",Toast.LENGTH_SHORT).show()
