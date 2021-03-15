@@ -38,14 +38,14 @@ class ContatoActivity : BaseActivity() {
         val nome = etNome.text.toString()
         val telefone = etTelefone.text.toString()
         val contato = ContatosVO(
-            0,
+            contatoId,
             nome,
             telefone
         )
         if(contatoId == -1) {
             ContatosApplication.instance.helperDB?.salvarContato(contato)
         }else{
-//            ContatoSingleton.lista.set(index,contato)
+          ContatosApplication.instance.helperDB?.updateContato(contato)
         }
         finish()
     }
