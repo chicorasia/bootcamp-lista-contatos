@@ -41,12 +41,19 @@ class HelperDB(
 
     }
 
-    fun buscarContatos(busca: String) : List<ContatosVO>{
+    fun buscarContatos(busca: String, ehBuscaPorId: Boolean = false) : List<ContatosVO>{
         val db = readableDatabase ?: return mutableListOf()
         var lista = mutableListOf<ContatosVO>()
+        var sql: String? = null
+        val args = if (ehBuscaPorId) { arrayOf(busca) } else { arrayOf("%$busca%") }
 
-        val sql = "SELECT * FROM $TABLE_NAME WHERE $COLUMN_NOME LIKE ?"
-        var cursor = db.rawQuery(sql, arrayOf("%$busca%"))
+        if(ehBuscaPorId){
+            sql = "SELECT * FROM $TABLE_NAME WHERE $COLUMN_ID = ?"
+        } else {
+            sql = "SELECT * FROM $TABLE_NAME WHERE $COLUMN_NOME LIKE ?"
+        }
+
+        val cursor = db.rawQuery(sql, args)
         if(cursor == null){
             db.close()
             return mutableListOf()
@@ -69,6 +76,14 @@ class HelperDB(
                 "VALUES (?,?)"
         val array = arrayOf(contato.nome, contato.telefone)
         db.execSQL(sql, array)
+        db.close()
+    }
+
+    fun deletarContato(id: Int) {
+        val db = writableDatabase ?: return
+        val sql = "DELETE FROM $TABLE_NAME WHERE $COLUMN_ID = ?"
+        val args = arrayOf("$id")
+        db.execSQL(sql, args)
         db.close()
     }
 

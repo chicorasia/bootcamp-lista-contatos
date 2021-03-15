@@ -6,14 +6,12 @@ import com.everis.listadecontatos.R
 import com.everis.listadecontatos.application.ContatosApplication
 import com.everis.listadecontatos.bases.BaseActivity
 import com.everis.listadecontatos.feature.listacontatos.model.ContatosVO
-import com.everis.listadecontatos.singleton.ContatoSingleton
 import kotlinx.android.synthetic.main.activity_contato.*
 import kotlinx.android.synthetic.main.activity_contato.toolBar
-import java.lang.RuntimeException
 
 class ContatoActivity : BaseActivity() {
 
-    private var index: Int = -1
+    private var contatoId: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,13 +22,16 @@ class ContatoActivity : BaseActivity() {
     }
 
     private fun setupContato(){
-        index = intent.getIntExtra("index",-1)
-        if (index == -1){
+        contatoId = intent.getIntExtra("index",-1)
+        if (contatoId == -1){
             btnExcluirContato.visibility = View.GONE
             return
         }
-        etNome.setText(ContatoSingleton.lista[index].nome)
-        etTelefone.setText(ContatoSingleton.lista[index].telefone)
+        val lista = ContatosApplication.instance.helperDB?.buscarContatos(
+                "$contatoId", true) ?: return
+        var contato = lista.getOrNull(0) ?: return
+        etNome.setText(contato.nome)
+        etTelefone.setText(contato.telefone)
     }
 
     private fun onClickSalvarContato(){
@@ -41,7 +42,7 @@ class ContatoActivity : BaseActivity() {
             nome,
             telefone
         )
-        if(index == -1) {
+        if(contatoId == -1) {
             ContatosApplication.instance.helperDB?.salvarContato(contato)
         }else{
 //            ContatoSingleton.lista.set(index,contato)
@@ -50,8 +51,8 @@ class ContatoActivity : BaseActivity() {
     }
 
     fun onClickExcluirContato(view: View) {
-        if(index > -1){
-            ContatoSingleton.lista.removeAt(index)
+        if(contatoId > -1){
+            ContatosApplication.instance.helperDB?.deletarContato(contatoId)
             finish()
         }
     }
