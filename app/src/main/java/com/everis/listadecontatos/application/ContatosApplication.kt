@@ -7,7 +7,10 @@ class ContatosApplication : Application() {
 
     var helperDB: HelperDB? = null
         private set
-    var instance: ContatosApplication? = null
+
+    companion object {
+        lateinit var instance: ContatosApplication
+    }
 
     override fun onCreate() {
         super.onCreate()

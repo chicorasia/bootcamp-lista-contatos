@@ -36,16 +36,21 @@ class HelperDB(
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
         if(newVersion != oldVersion){
             db?.execSQL(DROP_TABLE)
-            onCreate(db)
         }
+        onCreate(db)
 
     }
 
-    fun buscarContatos(busca: String) : MutableList<ContatosVO>{
+    fun buscarContatos(busca: String) : List<ContatosVO>{
         val db = readableDatabase ?: return mutableListOf()
         var lista = mutableListOf<ContatosVO>()
-        val sql = "SELECT * FROM $TABLE_NAME"
-        var cursor = db.rawQuery(sql, null) ?: return mutableListOf()
+
+        val sql = "SELECT * FROM $TABLE_NAME WHERE $COLUMN_NOME LIKE ?"
+        var cursor = db.rawQuery(sql, arrayOf("%$busca%"))
+        if(cursor == null){
+            db.close()
+            return mutableListOf()
+        }
         while(cursor.moveToNext()) {
             var contatoRecuperado = ContatosVO(
                     id = cursor.getInt(cursor.getColumnIndex(COLUMN_ID)),
@@ -54,8 +59,17 @@ class HelperDB(
             )
             lista.add(contatoRecuperado)
         }
+        db.close()
         return lista
-
-
     }
+
+    fun salvarContato(contato: ContatosVO) {
+        val db = writableDatabase ?: return
+        val sql = "INSERT INTO $TABLE_NAME ($COLUMN_NOME, $COLUMN_TELEFONE) " +
+                "VALUES (?,?)"
+        val array = arrayOf(contato.nome, contato.telefone)
+        db.execSQL(sql, array)
+        db.close()
+    }
+
 }
