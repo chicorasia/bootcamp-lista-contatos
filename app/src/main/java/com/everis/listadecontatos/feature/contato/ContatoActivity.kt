@@ -1,6 +1,5 @@
 package com.everis.listadecontatos.feature.contato
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import com.everis.listadecontatos.R
