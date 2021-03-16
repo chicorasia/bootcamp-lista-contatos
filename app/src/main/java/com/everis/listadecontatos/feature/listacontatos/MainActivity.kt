@@ -2,6 +2,7 @@ package com.everis.listadecontatos.feature.listacontatos
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.everis.listadecontatos.R
@@ -53,20 +54,31 @@ class MainActivity : BaseActivity() {
 
     private fun onClickBuscar(){
 
-        etBuscar.text.toString().let {
-            var listaFiltrada: List<ContatosVO> = try {
-                ContatosApplication
-                        .instance.helperDB?.buscarContatos(it) ?: mutableListOf()
-            } catch (ex: java.lang.Exception) {
-                ex.printStackTrace()
-                return
+        main_progress_circular.visibility = View.VISIBLE
+
+        Thread(Runnable {
+            Thread.sleep(500) // somente para efeito visual
+            etBuscar.text.toString().let {
+                var listaFiltrada: List<ContatosVO> = try {
+                    ContatosApplication
+                            .instance.helperDB?.buscarContatos(it) ?: mutableListOf()
+                } catch (ex: java.lang.Exception) {
+                    ex.printStackTrace()
+                    return@Runnable
+                }
+
+                runOnUiThread {
+                    recyclerView.apply {
+                        adapter = ContatoAdapter(context, listaFiltrada) { it ->
+                            onClickItemRecyclerView(it)
+                        }
+                    }
+                    main_progress_circular.visibility = View.GONE
+                    Toast.makeText(this, "Buscando por $it", Toast.LENGTH_SHORT).show()
+                }
             }
 
-            recyclerView.apply {
-                adapter = ContatoAdapter(context, listaFiltrada) { it ->
-                    onClickItemRecyclerView(it)} }
-            Toast.makeText(this,"Buscando por $it",Toast.LENGTH_SHORT).show()
-        }
+        }).start()
 
     }
 
