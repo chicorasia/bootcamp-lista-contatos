@@ -22,7 +22,9 @@ class ContatoActivity : BaseActivity() {
     }
 
     private fun setupContato(){
+
         contatoId = intent.getIntExtra("index",-1)
+
         if (contatoId == -1){
             btnExcluirContato.visibility = View.GONE
             return
