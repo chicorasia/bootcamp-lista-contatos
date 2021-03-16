@@ -3,15 +3,18 @@ package com.everis.listadecontatos.helpers
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
+import android.widget.Toast
+import com.everis.listadecontatos.BuildConfig
 import com.everis.listadecontatos.feature.listacontatos.model.ContatosVO
 
-class HelperDB(
+open class HelperDB(
         context: Context
 ) : SQLiteOpenHelper(context, NOME_BANCO, null, VERSAO_ATUAL) {
 
     companion object {
 
-        private val NOME_BANCO = "contato_db"
+        private val NOME_BANCO = BuildConfig.BANCO_DE_DADOS
         private val VERSAO_ATUAL = 1
 
     }
